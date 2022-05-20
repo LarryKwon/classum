@@ -11,6 +11,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.config';
+import { MulterModule } from '@nestjs/platform-express';
+import { MulterConfigService } from './config/multer.config';
 
 @Module({
   imports: [
@@ -26,6 +28,9 @@ import { TypeOrmConfigService } from './config/typeorm.config';
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
+    }),
+    MulterModule.registerAsync({
+      useClass: MulterConfigService,
     }),
   ],
   controllers: [AppController],
