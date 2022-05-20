@@ -11,7 +11,10 @@ db:
   synchronize: true
 
 jwt:
+  secret: 'Secret1234'
   expiresIn: 3600
+  refreshSecret: 'Refresh1234'
+  refreshExpire: 60 * 60 * 24 * 30
 
 logger:
   level: ['debug']

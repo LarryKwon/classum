@@ -11,6 +11,7 @@ db:
   synchronize: false
 
 jwt:
+  secret: 'Secret1234'
   expiresIn: 3600
 
 logger:

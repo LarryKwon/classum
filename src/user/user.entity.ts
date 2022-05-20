@@ -4,9 +4,12 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
+@Unique(['email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,4 +25,11 @@ export class User extends BaseEntity {
 
   @Column()
   firstName: string;
+
+  @Column({ nullable: true })
+  profilePicture?: string;
+
+  @Column({ nullable: true })
+  @Exclude()
+  RefreshToken?: string;
 }
