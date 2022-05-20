@@ -1,0 +1,14 @@
+server:
+  port: 3001
+
+db:
+  type: 'mysql'
+  port: 3306
+  database: 'CLASSUM_PROD'
+  host: '127.0.0.1'
+  username: 'root'
+  password: 'Larry11physics'
+  synchronize: false
+
+jwt:
+  expiresIn: 3600
