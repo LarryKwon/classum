@@ -12,3 +12,6 @@ db:
 
 jwt:
   expiresIn: 3600
+
+logger:
+  level: ['debug']

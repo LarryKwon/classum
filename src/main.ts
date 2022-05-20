@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
@@ -8,6 +8,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<string>('server.port');
   await app.listen(port);
+
+  const logConfig = configService.get<false | LogLevel[]>('logger.level');
+  await app.useLogger(logConfig);
   Logger.log(`Application listening on port ${port}`);
 }
 bootstrap();
