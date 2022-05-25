@@ -53,8 +53,14 @@ export class AuthController {
       this.authService.getCookiesWithRefreshToken(req.user);
 
     await this.userService.setRefreshToken(refreshToken, user.id);
-    res.cookie('Authentication', accessToken, accessOption);
+    Logger.log(JSON.stringify(accessToken));
+    Logger.log(JSON.stringify(accessOption));
+
+    Logger.log(JSON.stringify(refreshToken));
+    Logger.log(JSON.stringify(refreshOption));
     res.cookie('Refresh', refreshToken, refreshOption);
+    res.cookie('Authentication', accessToken, accessOption);
+    return user;
   }
 
   @Post('logout')

@@ -39,14 +39,14 @@ export class AuthService {
     };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('jwt.secret'),
-      expiresIn: this.configService.get('jwt.expiresIn'),
+      expiresIn: `${this.configService.get('jwt.expiresIn')}s`,
     });
     return {
       accessToken: token,
       domain: 'localhost',
       path: '/',
       httpOnly: true,
-      maxAge: Number(this.configService.get('jwt.expiresIn')),
+      maxAge: Number(this.configService.get('jwt.expiresIn')) * 1000,
     };
   }
 
@@ -56,9 +56,10 @@ export class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
     };
+
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get('jwt.refreshSecret'),
-      expiresIn: this.configService.get('refreshExpire'),
+      expiresIn: `${this.configService.get('jwt.refreshExpire')}s`,
     });
 
     return {
@@ -66,7 +67,7 @@ export class AuthService {
       domain: 'localhost',
       path: '/',
       httpOnly: true,
-      maxAge: Number(this.configService.get('jwt.refreshExpire')),
+      maxAge: Number(this.configService.get('jwt.refreshExpire')) * 1000,
     };
   }
 
