@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuards } from './guards/local-auth.guards';
-import { User } from '../user/user.entity';
+import { User } from '../user/entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from './decorator/skip-auth.decorator';

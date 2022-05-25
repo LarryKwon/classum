@@ -15,6 +15,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from './config/multer.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { UserspaceModule } from './userspace/userspace.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),
+    UserspaceModule,
   ],
   controllers: [AppController],
   providers: [
