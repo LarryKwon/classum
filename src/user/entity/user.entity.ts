@@ -16,10 +16,11 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column()
@@ -31,8 +32,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePicture?: string;
 
-  @Column({ nullable: true })
-  @Exclude()
+  @Column({ nullable: true, select: false })
   RefreshToken?: string;
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.user, { lazy: true })

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { AuthCredentialDto } from '../../auth/dto/auth-credential.dto';
 import * as bcrypt from 'bcryptjs';
-import { CreateUserDto } from '../../auth/dto/create-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
