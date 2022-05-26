@@ -11,16 +11,17 @@ import { Exclude } from 'class-transformer';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
 
 @Entity()
-@Unique(['email'])
+// @Unique(['email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Exclude()
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Exclude()
+  @Column()
   password: string;
 
   @Column()
@@ -32,7 +33,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePicture?: string;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   RefreshToken?: string;
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.user, { lazy: true })

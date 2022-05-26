@@ -1,7 +1,7 @@
 import { UserResponseDto } from '../dto/user-response.dto';
 import { User } from '../entity/user.entity';
 
-export class EntityToDtoConverter {
+export class UserConverter {
   static toResponseDto(user: User): UserResponseDto {
     const {
       id,

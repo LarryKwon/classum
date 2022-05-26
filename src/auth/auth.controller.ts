@@ -21,6 +21,8 @@ import { Public } from './decorator/skip-auth.decorator';
 import { Response } from 'express';
 import { UserService } from '../user/user.service';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { AuthConverter } from './converter/auth-converter';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,9 +34,12 @@ export class AuthController {
   @Public()
   @Post('/signup')
   @UsePipes(ValidationPipe)
-  signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async signUp(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ProfileResponseDto> {
     Logger.log(createUserDto);
-    return this.authService.signup(createUserDto);
+    const user = await this.authService.signup(createUserDto);
+    return AuthConverter.toResponseDto(user);
   }
 
   @Public()
@@ -55,7 +60,7 @@ export class AuthController {
     await this.userService.setRefreshToken(refreshToken, user.id);
     res.cookie('Refresh', refreshToken, refreshOption);
     res.cookie('Authentication', accessToken, accessOption);
-    return user;
+    return AuthConverter.toResponseDto(user);
   }
 
   @Post('logout')
@@ -79,6 +84,6 @@ export class AuthController {
 
   @Get('/profile')
   getProfile(@Req() req) {
-    return req.user;
+    return AuthConverter.toResponseDto(req.user);
   }
 }

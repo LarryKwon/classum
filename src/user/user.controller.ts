@@ -13,11 +13,12 @@ import {
 import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { Public } from '../auth/decorator/skip-auth.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import * as cookieParser from 'cookie-parser';
 import { Request } from 'express';
 import { SearchUserDto } from './dto/search-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
+import { UserConverter } from './converter/user-converter';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -28,11 +29,16 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/search')
   @UsePipes(ValidationPipe)
-  searchUser(@Body() searchUserDto: SearchUserDto) {
-    return this.userService.findBySearchDto(searchUserDto);
+  async searchUser(@Body() searchUserDto: SearchUserDto) {
+    const users: Array<User> = await this.userService.findBySearchDto(
+      searchUserDto,
+    );
+    const userResponse: Array<UserResponseDto> = users.map((user) =>
+      UserConverter.toResponseDto(user),
+    );
+    return userResponse;
   }
 
   @Get('/:id')
