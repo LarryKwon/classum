@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
 import { SpaceRole } from '../../space-role/entity/space-role.entity';
-import { IsOptional, Length } from 'class-validator';
 
 @Entity()
 export class Space extends BaseEntity {

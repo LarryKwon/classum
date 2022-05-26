@@ -30,7 +30,6 @@ export class UserController {
   }
 
   @Get('/search')
-  @UsePipes(ValidationPipe)
   async searchUser(@Body() searchUserDto: SearchUserDto) {
     const users: Array<User> = await this.userService.findBySearchDto(
       searchUserDto,
