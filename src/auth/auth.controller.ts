@@ -15,7 +15,7 @@ import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuards } from './guards/local-auth.guards';
 import { User } from '../user/entity/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from './decorator/skip-auth.decorator';
 import { Response } from 'express';
@@ -53,11 +53,6 @@ export class AuthController {
       this.authService.getCookiesWithRefreshToken(req.user);
 
     await this.userService.setRefreshToken(refreshToken, user.id);
-    Logger.log(JSON.stringify(accessToken));
-    Logger.log(JSON.stringify(accessOption));
-
-    Logger.log(JSON.stringify(refreshToken));
-    Logger.log(JSON.stringify(refreshOption));
     res.cookie('Refresh', refreshToken, refreshOption);
     res.cookie('Authentication', accessToken, accessOption);
     return user;
@@ -82,7 +77,6 @@ export class AuthController {
     return user;
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Get('/profile')
   getProfile(@Req() req) {
     return req.user;

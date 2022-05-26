@@ -8,13 +8,14 @@ db:
   host: '127.0.0.1'
   username: 'root'
   password: 'Larry11physics'
-  synchronize: true
+  synchronize: false
+  logging: 'all'
 
 jwt:
   secret: 'Secret1234'
-  expiresIn: 30
+  expiresIn: 3600
   refreshSecret: 'Refresh1234'
-  refreshExpire: 60
+  refreshExpire: 2592000
 
 logger:
   level: ['debug']
