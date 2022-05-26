@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
 import { SpaceRole } from '../../space-role/entity/space-role.entity';
+import { IsOptional, Length } from 'class-validator';
 
 @Entity()
 export class Space extends BaseEntity {
@@ -19,6 +20,12 @@ export class Space extends BaseEntity {
 
   @Column()
   logo: string;
+
+  @Column('varchar', { length: 8 })
+  userCode: string;
+
+  @Column('varchar', { length: 8 })
+  managerCode: string;
 
   @OneToMany((type) => SpaceRole, (spaceRole) => spaceRole.space, {
     lazy: true,

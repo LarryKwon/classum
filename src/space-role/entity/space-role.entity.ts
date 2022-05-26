@@ -18,7 +18,11 @@ export class SpaceRole {
   @Column()
   name: string;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
   role: Role;
 
   @ManyToOne((type) => Space, (space) => space.spaceRoles, { lazy: true })
