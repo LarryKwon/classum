@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
   Logger,
   Param,
   ParseIntPipe,
@@ -14,22 +16,40 @@ import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { SearchSpaceDto } from './dto/search-space.dto';
 import { User } from '../user/entity/user.entity';
-import { UpdateResult } from 'typeorm';
 import { JoinSpaceDto } from './dto/join-space.dto';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { UserSpaceService } from '../userspace/userspace.service';
 
 @Controller('space')
 export class SpaceController {
-  constructor(private readonly spaceService: SpaceService) {}
+  constructor(
+    private readonly spaceService: SpaceService,
+    private readonly userSpaceService: UserSpaceService,
+  ) {}
 
   @Post()
   @UsePipes(ValidationPipe)
-  createSpace(@Body() createSpaceDto: CreateSpaceDto) {
+  async createSpace(
+    @Body() createSpaceDto: CreateSpaceDto,
+    @GetUser() user: User,
+  ) {
     Logger.log(JSON.stringify(createSpaceDto));
-    return createSpaceDto;
+    if (!createSpaceDto.isSelectInSpaceRoles()) {
+      throw new BadRequestException('select role must be in role list');
+    }
+    const { savedSpace, userSpaceRole } = await this.spaceService.createSpace(
+      createSpaceDto,
+    );
+    await this.userSpaceService.createRelations(
+      user,
+      savedSpace,
+      userSpaceRole,
+    );
+    return savedSpace;
   }
 
   @Post('/join')
-  joinspace(@Body() joinSpaceDto: JoinSpaceDto) {
+  joinSpace(@Body() joinSpaceDto: JoinSpaceDto) {
     return null;
   }
 

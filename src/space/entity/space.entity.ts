@@ -17,8 +17,8 @@ export class Space extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  logo: string;
+  @Column({ nullable: true })
+  logo?: string;
 
   @Column('varchar', { length: 8 })
   userCode: string;
@@ -34,7 +34,7 @@ export class Space extends BaseEntity {
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.space, {
     lazy: true,
   })
-  userSpaces: UserSpace[];
+  userSpaces: [];
 
   @DeleteDateColumn()
   deletedAt?: Date;
