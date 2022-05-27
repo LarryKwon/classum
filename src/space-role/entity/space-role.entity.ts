@@ -26,7 +26,10 @@ export class SpaceRole {
   })
   role: Role;
 
-  @ManyToOne((type) => Space, (space) => space.spaceRoles, { eager: false })
+  @ManyToOne((type) => Space, (space) => space.spaceRoles, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   space: Space;
 

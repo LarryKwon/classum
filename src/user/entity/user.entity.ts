@@ -37,7 +37,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   RefreshToken?: string;
 
-  @OneToMany((type) => UserSpace, (userSpace) => userSpace.user, { lazy: true })
+  @OneToMany((type) => UserSpace, (userSpace) => userSpace.user, {
+    lazy: true,
+    cascade: ['insert', 'update', 'soft-remove', 'recover'],
+  })
   userSpaces: Promise<UserSpace[]>;
 
   @DeleteDateColumn()

@@ -15,11 +15,17 @@ export class UserSpace extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => User, (user) => user.userSpaces, { lazy: true })
+  @ManyToOne((type) => User, (user) => user.userSpaces, {
+    lazy: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   user: Promise<User>;
 
-  @ManyToOne((type) => Space, (space) => space.userSpaces, { lazy: true })
+  @ManyToOne((type) => Space, (space) => space.userSpaces, {
+    lazy: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   space: Promise<Space>;
 

@@ -28,11 +28,13 @@ export class Space extends BaseEntity {
 
   @OneToMany((type) => SpaceRole, (spaceRole) => spaceRole.space, {
     eager: true,
+    cascade: ['insert', 'update', 'soft-remove', 'recover'],
   })
   spaceRoles: SpaceRole[];
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.space, {
     lazy: true,
+    cascade: ['soft-remove', 'recover'],
   })
   userSpaces: Promise<UserSpace[]>;
 
