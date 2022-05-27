@@ -2,6 +2,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -25,13 +26,14 @@ export class SpaceRole {
   })
   role: Role;
 
-  @ManyToOne((type) => Space, (space) => space.spaceRoles, { lazy: true })
+  @ManyToOne((type) => Space, (space) => space.spaceRoles, { eager: false })
+  @JoinColumn()
   space: Space;
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.spaceRole, {
     lazy: true,
   })
-  userSpaces: UserSpace[];
+  userSpaces: Promise<UserSpace[]>;
 
   @DeleteDateColumn()
   deletedAt?: Date;

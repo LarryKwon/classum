@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,6 +10,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,6 +22,7 @@ import { JoinSpaceDto } from './dto/join-space.dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UserSpaceService } from '../userspace/userspace.service';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
 export class SpaceController {
   constructor(
@@ -55,8 +58,8 @@ export class SpaceController {
   }
 
   @Post('/join')
-  joinSpace(@Body() joinSpaceDto: JoinSpaceDto) {
-    return null;
+  joinSpace(@Body() joinSpaceDto: JoinSpaceDto, @GetUser() user: User) {
+    return this.spaceService.joinSpace(joinSpaceDto, user);
   }
 
   @Get('/:id')

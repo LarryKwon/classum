@@ -33,6 +33,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePicture?: string;
 
+  @Exclude()
   @Column({ nullable: true })
   RefreshToken?: string;
 

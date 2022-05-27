@@ -27,14 +27,14 @@ export class Space extends BaseEntity {
   managerCode: string;
 
   @OneToMany((type) => SpaceRole, (spaceRole) => spaceRole.space, {
-    lazy: true,
+    eager: true,
   })
   spaceRoles: SpaceRole[];
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.space, {
     lazy: true,
   })
-  userSpaces: [];
+  userSpaces: Promise<UserSpace[]>;
 
   @DeleteDateColumn()
   deletedAt?: Date;

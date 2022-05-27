@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSpaceRepository } from './repository/userspace.repository';
 import { User } from '../user/entity/user.entity';
@@ -13,11 +13,11 @@ export class UserSpaceService {
   ) {}
 
   async createRelations(user: User, space: Space, spaceRole: SpaceRole) {
-    const createdRelations = this.userSpaceRepository.create({
-      user: user,
-      space: space,
-      spaceRole: spaceRole,
-    });
+    const createdRelations = await this.userSpaceRepository.create();
+    createdRelations.user = Promise.resolve(user);
+    createdRelations.space = Promise.resolve(space);
+    createdRelations.spaceRole = Promise.resolve(spaceRole);
+    Logger.log(JSON.stringify(createdRelations));
     return await this.userSpaceRepository.save(createdRelations);
   }
 }

@@ -2,6 +2,7 @@ import {
   BaseEntity,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,15 +16,18 @@ export class UserSpace extends BaseEntity {
   id: number;
 
   @ManyToOne((type) => User, (user) => user.userSpaces, { lazy: true })
-  user: User;
+  @JoinColumn()
+  user: Promise<User>;
 
   @ManyToOne((type) => Space, (space) => space.userSpaces, { lazy: true })
-  space: Space;
+  @JoinColumn()
+  space: Promise<Space>;
 
   @ManyToOne((type) => SpaceRole, (spaceRole) => spaceRole.userSpaces, {
     lazy: true,
   })
-  spaceRole: SpaceRole;
+  @JoinColumn()
+  spaceRole: Promise<SpaceRole>;
 
   @DeleteDateColumn()
   deletedAt?: Date;
