@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsNotEmpty,
   IsString,
   Matches,
   MaxLength,
@@ -8,6 +9,7 @@ import {
 
 export class AuthCredentialDto {
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
@@ -15,5 +17,6 @@ export class AuthCredentialDto {
   @Matches(/^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).*$/, {
     message: '비밀번호는 숫자, 영문, 특수문자 각 1자리를 포함해야합니다.',
   })
+  @IsNotEmpty()
   password: string;
 }

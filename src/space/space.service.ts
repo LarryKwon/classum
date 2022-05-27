@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SpaceRepository } from './repository/space.repository';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { generateRandomString } from '../util/code-generator';
 import { SpaceRoleService } from '../space-role/space-role.service';
 import { Role } from '../auth/enum/role.enum';
+import { SearchSpaceDto } from './dto/search-space.dto';
+import { getRepository } from 'typeorm';
+import { Space } from './entity/space.entity';
 
 @Injectable()
 export class SpaceService {
@@ -38,5 +41,17 @@ export class SpaceService {
     const savedSpace = await this.spaceRepository.save(createdSpace);
 
     return { savedSpace, userSpaceRole };
+  }
+
+  async searchSpace(searchSpaceDto: SearchSpaceDto) {
+    const { name, ...rest } = searchSpaceDto;
+    const searchedSpaces = await getRepository(Space)
+      .createQueryBuilder()
+      .where('name like :name', {
+        name: `%${name}%`,
+      })
+      .getMany();
+    Logger.log('searched Space: ', searchedSpaces);
+    return searchedSpaces;
   }
 }

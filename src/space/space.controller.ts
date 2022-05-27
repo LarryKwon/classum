@@ -48,14 +48,14 @@ export class SpaceController {
     return savedSpace;
   }
 
-  @Post('/join')
-  joinSpace(@Body() joinSpaceDto: JoinSpaceDto) {
-    return null;
-  }
-
   @Get('/search')
   @UsePipes(ValidationPipe)
   searchSpace(@Body() searchSpaceDto: SearchSpaceDto) {
+    return this.spaceService.searchSpace(searchSpaceDto);
+  }
+
+  @Post('/join')
+  joinSpace(@Body() joinSpaceDto: JoinSpaceDto) {
     return null;
   }
 
