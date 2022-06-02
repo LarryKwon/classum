@@ -11,7 +11,6 @@ import { Exclude } from 'class-transformer';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
 
 @Entity()
-// @Unique(['email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

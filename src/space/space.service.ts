@@ -65,6 +65,7 @@ export class SpaceService {
       return searchedSpace;
     }
   }
+
   async createSpace(createSpaceDto: CreateSpaceDto) {
     const { name, spaceRoles, selectedSpaceRole } = createSpaceDto;
 
@@ -95,12 +96,14 @@ export class SpaceService {
     const { spaceId, code, selectedSpaceRole } = joinSpaceDto;
 
     //id에 해당하는 space가 있는지 검사
-    const space = await this.spaceRepository.findOne(spaceId);
+    const space = await this.spaceRepository.findOne(spaceId, {
+      relations: ['userSpaces'],
+    });
     if (!space) {
       throw new NotFoundException(`no space with ${spaceId}`);
     }
     Logger.log('searched Space: ', JSON.stringify(space));
-    //user가 이미 spaceRole에 들어와있는지 검사
+    //user가 이미 space에 들어와있는지 검사
     const userSpaces = await space.userSpaces;
     Logger.log(JSON.stringify(userSpaces));
     const usersInSpacePromise = userSpaces.map(
