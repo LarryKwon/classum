@@ -7,12 +7,16 @@ import { SpaceRoleRepository } from '../space-role/repository/space-role.reposit
 import { SpaceRoleService } from '../space-role/space-role.service';
 import { SpaceRoleModule } from '../space-role/space-role.module';
 import { UserspaceModule } from '../userspace/userspace.module';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { CaslModule } from '../casl/casl.module';
+import { UserSpaceRepository } from '../userspace/repository/userspace.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SpaceRepository]),
+    TypeOrmModule.forFeature([SpaceRepository, UserSpaceRepository]),
     SpaceRoleModule,
     UserspaceModule,
+    CaslModule,
   ],
   controllers: [SpaceController],
   providers: [SpaceService],

@@ -16,6 +16,8 @@ import { MulterConfigService } from './config/multer.config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserspaceModule } from './userspace/userspace.module';
+import { Role } from './auth/enum/role.enum';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -36,6 +38,7 @@ import { UserspaceModule } from './userspace/userspace.module';
       useClass: MulterConfigService,
     }),
     UserspaceModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [

@@ -10,6 +10,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -21,6 +22,12 @@ import { User } from '../user/entity/user.entity';
 import { JoinSpaceDto } from './dto/join-space.dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UserSpaceService } from '../userspace/userspace.service';
+import { PoliciesGuard } from '../auth/guards/policies.guard';
+import { CheckPolicies } from '../auth/decorator/policy.decorator';
+import { AppAbility } from '../casl/casl-ability.factory';
+import { Action } from '../auth/enum/Action';
+import { Space } from './entity/space.entity';
+import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/delete-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
@@ -62,13 +69,15 @@ export class SpaceController {
     return this.spaceService.joinSpace(joinSpaceDto, user);
   }
 
-  @Get('/:id')
-  findSpaceById(@Param('id') id: number) {
+  @Get('/:spaceId')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new DeleteSpacePolicyHandler())
+  findSpaceById(@Param('spaceId') id: number) {
     return this.spaceService.searchSpaceById(id);
   }
 
   @Delete('/:id')
-  deleteSpace(@Param('id') id: number) {
+  deleteSpace(@Param('spaceId') id: number) {
     return this.spaceService.deleteSpaceById(id);
   }
 }
