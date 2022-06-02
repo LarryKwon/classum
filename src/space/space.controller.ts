@@ -64,11 +64,11 @@ export class SpaceController {
 
   @Get('/:id')
   findSpaceById(@Param('id') id: number) {
-    return null;
+    return this.spaceService.searchSpaceById(id);
   }
 
   @Delete('/:id')
   deleteSpace(@Param('id') id: number) {
-    return null;
+    return this.spaceService.deleteSpaceById(id);
   }
 }

@@ -11,7 +11,7 @@ import { generateRandomString } from '../util/code-generator';
 import { SpaceRoleService } from '../space-role/space-role.service';
 import { Role } from '../auth/enum/role.enum';
 import { SearchSpaceDto } from './dto/search-space.dto';
-import { getRepository } from 'typeorm';
+import { getRepository, UpdateResult } from 'typeorm';
 import { Space } from './entity/space.entity';
 import { JoinSpaceDto } from './dto/join-space.dto';
 import { UserSpaceService } from '../userspace/userspace.service';
@@ -28,6 +28,21 @@ export class SpaceService {
     private readonly spaceRoleService: SpaceRoleService,
     private readonly userSpaceService: UserSpaceService,
   ) {}
+
+  async searchSpaceById(id: number) {
+    try {
+      return await this.spaceRepository.findOneOrFail(id);
+    } catch (e) {
+      throw new NotFoundException(`no space with id ${id}`);
+    }
+  }
+
+  async deleteSpaceById(id: number): Promise<Space> {
+    const spaceWithId = await this.spaceRepository.findOneOrFail(id, {
+      relations: ['userSpaces'],
+    });
+    return await this.spaceRepository.softRemove(spaceWithId);
+  }
 
   async searchSpace(searchSpaceDto: SearchSpaceDto): Promise<Array<Space>>;
   async searchSpace(code: string): Promise<Space>;
