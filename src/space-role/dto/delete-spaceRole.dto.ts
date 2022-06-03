@@ -6,7 +6,6 @@ import { Type } from 'class-transformer';
 import ValidSpaceRole from '../../space/decorator/space-role.validator';
 
 export class DeleteSpaceRoleDto {
-  @ValidSpaceRole()
   @ValidateNested()
   @Type(() => CreateSpaceRoleDto)
   spaceRole: CreateSpaceRoleDto;

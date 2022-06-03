@@ -35,6 +35,7 @@ export class SpaceRole {
 
   @OneToMany((type) => UserSpace, (userSpace) => userSpace.spaceRole, {
     lazy: true,
+    cascade: ['soft-remove', 'recover'],
   })
   userSpaces: Promise<UserSpace[]>;
 

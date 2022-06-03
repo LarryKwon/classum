@@ -31,6 +31,7 @@ export class UserSpace extends BaseEntity {
 
   @ManyToOne((type) => SpaceRole, (spaceRole) => spaceRole.userSpaces, {
     lazy: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn()
   spaceRole: Promise<SpaceRole>;

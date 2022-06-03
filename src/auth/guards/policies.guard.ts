@@ -7,6 +7,7 @@ import {
   ExecutionContext,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CHECK_POLICIES_KEY } from '../decorator/policy.decorator';
 import { PolicyHandler } from '../../casl/handlerType';
@@ -37,13 +38,16 @@ export class PoliciesGuard implements CanActivate {
     const user = request.user;
     const spaceId = request.body.spaceId;
     Logger.log('spaceId params: ', spaceId);
-
-    const space = await this.spaceRepository.findOneOrFail(spaceId);
-    Logger.log(`search with ${spaceId}`, JSON.stringify(space));
-    const ability = await this.caslAbilityFactory.createForUser(user, space);
-    return policyHandlers.every((handler) =>
-      this.execPolicyHandler(handler, ability),
-    );
+    try {
+      const space = await this.spaceRepository.findOneOrFail(spaceId);
+      Logger.log(`search with ${spaceId}`, JSON.stringify(space));
+      const ability = await this.caslAbilityFactory.createForUser(user, space);
+      return policyHandlers.every((handler) =>
+        this.execPolicyHandler(handler, ability),
+      );
+    } catch (e) {
+      throw new NotFoundException(`there's no space with spaceId: ${spaceId}`);
+    }
   }
 
   private execPolicyHandler(handler: PolicyHandler, ability: AppAbility) {
