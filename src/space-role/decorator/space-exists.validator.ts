@@ -5,7 +5,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SpaceRepository } from '../../space/repository/space.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -27,7 +27,7 @@ export default function SpaceExists(
 
 @ValidatorConstraint({ name: 'SpaceExists', async: true })
 @Injectable()
-class SpaceExistsRule implements ValidatorConstraintInterface {
+export class SpaceExistsRule implements ValidatorConstraintInterface {
   constructor(
     @InjectRepository(SpaceRepository)
     private readonly spaceRepository: SpaceRepository,
@@ -36,7 +36,8 @@ class SpaceExistsRule implements ValidatorConstraintInterface {
   async validate(value: any): Promise<boolean> {
     if (typeof value === 'number') {
       try {
-        await this.spaceRepository.findOneOrFail(value);
+        const space = await this.spaceRepository.findOneOrFail(value);
+        Logger.log(JSON.stringify(space));
         return true;
       } catch (e) {
         return false;
@@ -46,6 +47,6 @@ class SpaceExistsRule implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-    return `there is no space with spaceId: ${args.property} `;
+    return `there is no space with spaceId: ${args.value} `;
   }
 }

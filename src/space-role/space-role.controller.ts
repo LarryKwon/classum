@@ -9,8 +9,8 @@ import { SpaceRoleService } from './space-role.service';
 export class SpaceRoleController {
   constructor(private readonly spaceRoleService: SpaceRoleService) {}
   @Delete()
-  @UseGuards(PoliciesGuard)
-  @CheckPolicies(new DeleteSpacePolicyHandler())
+  // @UseGuards(PoliciesGuard)
+  // @CheckPolicies(new DeleteSpacePolicyHandler())
   deleteSpaceRole(@Body() deleteSpaceRoleDto: DeleteSpaceRoleDto) {
     return this.spaceRoleService.deleteSpaceRole();
   }

@@ -7,6 +7,7 @@ import { UserSpaceRepository } from '../userspace/repository/userspace.repositor
 import { UserspaceModule } from '../userspace/userspace.module';
 import { CaslModule } from '../casl/casl.module';
 import { SpaceRepository } from '../space/repository/space.repository';
+import { SpaceExistsRule } from './decorator/space-exists.validator';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { SpaceRepository } from '../space/repository/space.repository';
     UserspaceModule,
     CaslModule,
   ],
-  providers: [SpaceRoleService],
+  providers: [SpaceRoleService, SpaceExistsRule],
   controllers: [SpaceRoleController],
   exports: [SpaceRoleService],
 })
