@@ -60,7 +60,6 @@ export class CaslAbilityFactory {
       if (spaceRole.role === Role.ADMIN) {
         can(Action.Manage, 'all');
       } else if (spaceRole.role === Role.MANAGER) {
-        can(Action.Read, Space);
         can(Action.Update, Space);
         can(Action.Delete, Space);
 
@@ -69,7 +68,6 @@ export class CaslAbilityFactory {
         can(Action.Update, SpaceRole);
         can(Action.Delete, SpaceRole);
       } else if (spaceRole.role === Role.USER) {
-        can(Action.Read, Space);
         cannot(Action.Update, Space);
         cannot(Action.Delete, Space);
 
@@ -79,9 +77,10 @@ export class CaslAbilityFactory {
         cannot(Action.Delete, SpaceRole);
       }
     } else {
-      console.log('null???');
       cannot(Action.Manage, 'all');
     }
+    can(Action.Create, Space);
+    can(Action.Read, Space);
 
     return build({
       detectSubjectType: (item) =>

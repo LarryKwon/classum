@@ -14,7 +14,6 @@ import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSpaceRepository } from '../../userspace/repository/userspace.repository';
 import { SpaceRepository } from '../../space/repository/space.repository';
-import { SpaceRoleRepository } from '../../space-role/repository/space-role.repository';
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
@@ -36,12 +35,12 @@ export class PoliciesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    const spaceId = request.params.spaceId;
+    const spaceId = request.body.spaceId;
     Logger.log('spaceId params: ', spaceId);
 
     const space = await this.spaceRepository.findOneOrFail(spaceId);
+    Logger.log(`search with ${spaceId}`, JSON.stringify(space));
     const ability = await this.caslAbilityFactory.createForUser(user, space);
-    request.params.spaceId = spaceId;
     return policyHandlers.every((handler) =>
       this.execPolicyHandler(handler, ability),
     );
