@@ -25,4 +25,8 @@ export class SpaceRoleService {
     );
     return savedSpaceRoles;
   }
+
+  deleteSpaceRole() {
+    return true;
+  }
 }
