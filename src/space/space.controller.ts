@@ -5,10 +5,8 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Logger,
   Param,
-  ParseIntPipe,
   Post,
   UseGuards,
   UseInterceptors,
@@ -24,9 +22,6 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UserSpaceService } from '../userspace/userspace.service';
 import { PoliciesGuard } from '../auth/guards/policies.guard';
 import { CheckPolicies } from '../auth/decorator/policy.decorator';
-import { AppAbility } from '../casl/casl-ability.factory';
-import { Action } from '../auth/enum/Action';
-import { Space } from './entity/space.entity';
 import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/delete-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -70,14 +65,14 @@ export class SpaceController {
   }
 
   @Get('/:spaceId')
-  @UseGuards(PoliciesGuard)
-  @CheckPolicies(new DeleteSpacePolicyHandler())
   findSpaceById(@Param('spaceId') id: number) {
     return this.spaceService.searchSpaceById(id);
   }
 
   @Delete('/:id')
-  deleteSpace(@Param('spaceId') id: number) {
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new DeleteSpacePolicyHandler())
+  deleteSpace(@Param('id') id: number) {
     return this.spaceService.deleteSpaceById(id);
   }
 }
