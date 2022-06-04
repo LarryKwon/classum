@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
 import { SpaceRole } from '../../space-role/entity/space-role.entity';
+import { Post } from '../../post/entity/post.entity';
 
 @Entity()
 export class Space extends BaseEntity {
@@ -37,6 +38,11 @@ export class Space extends BaseEntity {
     cascade: ['soft-remove', 'recover'],
   })
   userSpaces: Promise<UserSpace[]>;
+
+  @OneToMany((type) => Post, (post) => post.space, {
+    cascade: ['soft-remove', 'recover'],
+  })
+  posts: Post[];
 
   @DeleteDateColumn()
   deletedAt?: Date;

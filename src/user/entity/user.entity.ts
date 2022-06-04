@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UserSpace } from '../../userspace/entity/userspace.entity';
+import { Post } from '../../post/entity/post.entity';
+import { Chat } from '../../chat/entity/chat.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -41,6 +43,18 @@ export class User extends BaseEntity {
     cascade: ['insert', 'update', 'soft-remove', 'recover'],
   })
   userSpaces: Promise<UserSpace[]>;
+
+  @OneToMany((type) => Post, (post) => post.writer, {
+    eager: false,
+    cascade: ['insert', 'update', 'soft-remove', 'recover'],
+  })
+  posts: Post[];
+
+  @OneToMany((type) => Chat, (chat) => chat.writer, {
+    eager: false,
+    cascade: ['insert', 'update', 'soft-remove', 'recover'],
+  })
+  chats: Chat[];
 
   @DeleteDateColumn()
   deletedAt?: Date;
