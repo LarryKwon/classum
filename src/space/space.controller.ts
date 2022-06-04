@@ -66,7 +66,7 @@ export class SpaceController {
 
   @Get('/:spaceId')
   findSpaceById(@Param('spaceId') id: number) {
-    return this.spaceService.searchSpaceById(id);
+    return this.spaceService.findSpaceById(id);
   }
 
   @Delete('/:id')

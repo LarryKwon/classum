@@ -29,7 +29,7 @@ export class SpaceService {
     private readonly userSpaceService: UserSpaceService,
   ) {}
 
-  async searchSpaceById(id: number) {
+  async findSpaceById(id: number) {
     try {
       return await this.spaceRepository.findOneOrFail(id);
     } catch (e) {
