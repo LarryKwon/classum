@@ -22,7 +22,7 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UserSpaceService } from '../userspace/userspace.service';
 import { PoliciesGuard } from '../auth/guards/policies.guard';
 import { CheckPolicies } from '../auth/decorator/policy.decorator';
-import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/delete-policy.handler';
+import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space.delete-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
