@@ -7,6 +7,8 @@ import { UserSpaceRepository } from '../userspace/repository/userspace.repositor
 import { CaslModule } from '../casl/casl.module';
 import { PostRepository } from './repository/post.repository';
 import { SpaceModule } from '../space/space.module';
+import { UserSpaceService } from '../userspace/userspace.service';
+import { UserspaceModule } from '../userspace/userspace.module';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { SpaceModule } from '../space/space.module';
     ]),
     CaslModule,
     SpaceModule,
+    UserspaceModule,
   ],
   controllers: [PostController],
   providers: [PostService],

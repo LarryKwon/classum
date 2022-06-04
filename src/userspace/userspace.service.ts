@@ -20,4 +20,14 @@ export class UserSpaceService {
     Logger.log(JSON.stringify(createdRelations));
     return await this.userSpaceRepository.save(createdRelations);
   }
+
+  async findUserSpace(userId: number, spaceId: number) {
+    return await this.userSpaceRepository.findOneOrFail({
+      where: {
+        user: userId,
+        space: spaceId,
+      },
+      relations: ['space', 'spaceRole', 'user'],
+    });
+  }
 }

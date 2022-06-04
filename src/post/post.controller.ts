@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,21 +9,27 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PoliciesGuard } from '../auth/guards/policies.guard';
 import { CheckPolicies } from '../auth/decorator/policy.decorator';
-import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space.delete-policy.handler';
-import { DeleteSpaceRoleDto } from '../space-role/dto/delete-spaceRole.dto';
 import { ReadPostPolicyHandler } from '../auth/guards/policy-handler/post/post.read-policy.handler';
-import { CreatePostPolicyHandler } from '../auth/guards/policy-handler/post/post.create-policy.handler';
+import { CreateQuestPolicyHandler } from '../auth/guards/policy-handler/post/post.createQuest-policy.handler';
 import { CreatePostDto } from './dto/create-post.dto';
-import { SearchSpaceDto } from '../space/dto/search-space.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UpdatePostPolicyHandler } from '../auth/guards/policy-handler/post/post.update-policy.handler';
 import { DeletePostPolicyHandler } from '../auth/guards/policy-handler/post/post.delete-policy.handler';
 import { DeletePostDto } from './dto/delete-post.dto';
+import { SearchPostDto } from './dto/search-post.dto';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { User } from '../user/entity/user.entity';
+import { CreateNoticePolicyHandler } from '../auth/guards/policy-handler/post/post.createNotice-policy.handler';
+import { PostType } from './enum/post-type.enum';
+import { NoticeValidationPipe } from './pipes/post-status-validation.pipe';
+import { PostConverter } from './converter/post-converter';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -29,22 +37,55 @@ export class PostController {
   @Get('/search')
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ReadPostPolicyHandler())
-  searchPost(@Body() searchPostDto: SearchSpaceDto) {
-    return null;
+  async searchPost(
+    @Body() searchPostDto: SearchPostDto,
+    @GetUser() user: User,
+  ) {
+    const searchedPosts = await this.postService.searchPost(
+      searchPostDto.keyword,
+      searchPostDto.spaceId,
+    );
+    const filteredPosts = Promise.all(
+      searchedPosts.map(
+        async (post) => await this.postService.afterSearch(post, user),
+      ),
+    );
+    return filteredPosts;
   }
 
   @Get('/:id')
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ReadPostPolicyHandler())
-  findPostById(@Param('id') id: number, @Body('spaceId') spaceId: number) {
-    return null;
+  async findPostById(@Param('id') id: number, @GetUser() user: User) {
+    const post = await this.postService.findPostById(id);
+    return await this.postService.afterSearch(post, user);
   }
 
-  @Post()
+  @Post('/quest')
   @UseGuards(PoliciesGuard)
-  @CheckPolicies(new CreatePostPolicyHandler())
-  createPost(@Body() createPostDto: CreatePostDto) {
-    return null;
+  @CheckPolicies(new CreateQuestPolicyHandler())
+  createNotice(@Body() createPostDto: CreatePostDto, @GetUser() user: User) {
+    const type = createPostDto.type;
+    if (type !== PostType.QUEST) {
+      throw new BadRequestException(`write post with type quest, now: ${type}`);
+    }
+    return this.postService.createPost(createPostDto, user);
+  }
+
+  @Post('/notice')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new CreateNoticePolicyHandler())
+  createQuest(
+    @Body(NoticeValidationPipe) createPostDto: CreatePostDto,
+    @GetUser() user: User,
+  ) {
+    const type = createPostDto.type;
+    if (type !== PostType.NOTICE) {
+      throw new BadRequestException(
+        `write post with type notice, now: ${type}`,
+      );
+    }
+    return this.postService.createPost(createPostDto, user);
   }
 
   @Patch('/:id')
