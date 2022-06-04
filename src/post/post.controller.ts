@@ -28,6 +28,7 @@ import { CreateNoticePolicyHandler } from '../auth/guards/policy-handler/post/po
 import { PostType } from './enum/post-type.enum';
 import { NoticeValidationPipe } from './pipes/post-status-validation.pipe';
 import { PostConverter } from './converter/post-converter';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('post')

@@ -73,7 +73,7 @@ export class CaslAbilityFactory {
         can(Action.Delete, SpaceRole);
 
         can(Action.WriteNotice, Post);
-        can(Action.WriteQuest, Post);
+        can(Action.WriteQuest, Post, { isAnonymous: false });
         can(Action.Read, Post);
         can(Action.Update, Post, { writer: user });
         can(Action.Delete, Post);

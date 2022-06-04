@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostRepository } from './repository/post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -12,6 +17,8 @@ import { SpaceRole } from '../space-role/entity/space-role.entity';
 import { UserSpace } from '../userspace/entity/userspace.entity';
 import { Role } from '../auth/enum/role.enum';
 import { PostConverter } from './converter/post-converter';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { Action } from '../auth/enum/Action';
 
 @Injectable()
 export class PostService {
@@ -20,6 +27,7 @@ export class PostService {
     private readonly postRepository: PostRepository,
     private readonly spaceService: SpaceService,
     private readonly userSpaceService: UserSpaceService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   async afterSearch(post: Post, currentUser: User) {
@@ -77,6 +85,7 @@ export class PostService {
   async createPost(createPostDto: CreatePostDto, user: User) {
     const { type, contents, attachment, isAnonymous, spaceId } = createPostDto;
     const space = await this.spaceService.findSpaceById(spaceId);
+    const ability = await this.caslAbilityFactory.createForUser(user, space);
     const post = await this.postRepository.create({
       contents: contents,
       postType: type,
@@ -85,7 +94,13 @@ export class PostService {
       isAnonymous: isAnonymous,
       space: space,
     });
-    return await this.postRepository.save(post);
+    if (ability.can(Action.WriteQuest, post)) {
+      return await this.postRepository.save(post);
+    } else {
+      throw new BadRequestException(
+        `manager can't create post with anonymous options`,
+      );
+    }
   }
 
   async updatePost(updatePostDto: UpdatePostDto) {
