@@ -18,7 +18,6 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserspaceModule } from './userspace/userspace.module';
 import { Role } from './auth/enum/role.enum';
 import { CaslModule } from './casl/casl.module';
-import { ServiceController } from './service/service.controller';
 
 @Module({
   imports: [
@@ -41,7 +40,7 @@ import { ServiceController } from './service/service.controller';
     UserspaceModule,
     CaslModule,
   ],
-  controllers: [AppController, ServiceController],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,

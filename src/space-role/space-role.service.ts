@@ -7,10 +7,10 @@ import {
 import { SpaceRepository } from '../space/repository/space.repository';
 import { SpaceRoleRepository } from './repository/space-role.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Space } from '../space/entity/space.entity';
 import { CreateSpaceRoleDto } from './dto/create-spaceRole.dto';
 import { SpaceRole } from './entity/space-role.entity';
 import { DeleteSpaceRoleDto } from './dto/delete-spaceRole.dto';
+import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class SpaceRoleService {
@@ -34,9 +34,12 @@ export class SpaceRoleService {
     return savedSpaceRoles;
   }
 
-  async findSpaceRole(spaceId: number): Promise<SpaceRole[]> {
+  async findSpaceRole(
+    spaceId: number,
+    options?: FindOneOptions,
+  ): Promise<SpaceRole[]> {
     try {
-      const space = await this.spaceRepository.findOneOrFail(spaceId);
+      const space = await this.spaceRepository.findOneOrFail(spaceId, options);
       return space.spaceRoles;
     } catch (e) {
       throw new NotFoundException(`there's no space with spaceId: ${spaceId}`);
