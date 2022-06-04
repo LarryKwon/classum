@@ -47,7 +47,7 @@ export class CaslAbilityFactory {
 
     const userId: number = user.id;
     const spaceId: number = space.id;
-    const userSpace = await this.userSpaceRepository.findOneOrFail({
+    const userSpace = await this.userSpaceRepository.findOne({
       where: {
         user: userId,
         space: spaceId,

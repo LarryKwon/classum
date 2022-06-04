@@ -11,6 +11,8 @@ import { Space } from '../../space/entity/space.entity';
 import { Chat } from '../../chat/entity/chat.entity';
 import { Exclude } from 'class-transformer';
 import { User } from '../../user/entity/user.entity';
+import { PostType } from '../enum/post-type.enum';
+import { Role } from '../../auth/enum/role.enum';
 
 @Entity()
 export class Post extends BaseEntity {
@@ -23,6 +25,13 @@ export class Post extends BaseEntity {
   })
   @JoinColumn()
   writer: User;
+
+  @Column({
+    type: 'enum',
+    enum: PostType,
+    default: PostType.QUEST,
+  })
+  postType: PostType;
 
   @Column()
   contents: string;
