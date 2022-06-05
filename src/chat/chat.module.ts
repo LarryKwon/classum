@@ -11,6 +11,7 @@ import { PostModule } from '../post/post.module';
 import { ChatTreeRepository } from './repository/chat.tree-repository';
 import { UserSpaceRepository } from '../userspace/repository/userspace.repository';
 import { ChatExistsRule } from './decorator/chat-exists.validator';
+import { UserspaceModule } from '../userspace/userspace.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ChatExistsRule } from './decorator/chat-exists.validator';
     CaslModule,
     SpaceModule,
     PostModule,
+    UserspaceModule,
   ],
   controllers: [ChatController],
   providers: [ChatService, ChatExistsRule],

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRepository } from './repository/chat.repository';
@@ -16,6 +17,11 @@ import { User } from '../user/entity/user.entity';
 import { SpaceService } from '../space/space.service';
 import { Action } from '../auth/enum/Action';
 import { FindChatsDto } from './dto/find-chats.dto';
+import { Chat } from './entity/chat.entity';
+import { UserSpaceService } from '../userspace/userspace.service';
+import { SpaceRole } from '../space-role/entity/space-role.entity';
+import { Role } from '../auth/enum/role.enum';
+import { ChatConverter } from './converter/chat-converter';
 
 @Injectable()
 export class ChatService {
@@ -27,20 +33,40 @@ export class ChatService {
     private readonly caslAbilityFactory: CaslAbilityFactory,
     private readonly postService: PostService,
     private readonly spaceService: SpaceService,
+    private readonly userSpaceService: UserSpaceService,
   ) {}
 
   async findChatById(id: number) {
-    return await this.chatTreeRepository.findOneOrFail(id);
+    try {
+      return await this.chatTreeRepository.findOneOrFail(id, {
+        relations: ['post'],
+      });
+    } catch (e) {
+      throw new NotFoundException(`there's no chat with id: ${id}`);
+    }
   }
 
   async findAllChats(findChatsDto: FindChatsDto, user: User) {
     const { spaceId, postId } = findChatsDto;
     const space = await this.spaceService.findSpaceById(spaceId);
     const post = await this.postService.findPostById(postId);
+    const userSpace = await this.userSpaceService.findUserSpace(
+      user.id,
+      spaceId,
+    );
+    const spaceRole: SpaceRole = await Promise.resolve(userSpace.spaceRole);
 
     const ability = await this.caslAbilityFactory.createForUser(user, space);
     if (ability.can(Action.Read, post)) {
-      return post.chats;
+      const chats: Chat[] = post.chats;
+      const filteredChats = chats.map((chat) => {
+        if (spaceRole.role === Role.USER && chat.isAnonymous === true) {
+          return ChatConverter.toFindResponseDto(chat, user);
+        } else {
+          return chat;
+        }
+      });
+      return filteredChats;
     } else {
       throw new ForbiddenException(
         `can't see chats on posts in space that you are not participated in`,
@@ -64,10 +90,11 @@ export class ChatService {
       ability.can(Action.Create, createdChat) &&
       ability.can(Action.Read, post)
     ) {
-      return await this.chatRepository.save(createdChat);
+      const chat = await this.chatRepository.save(createdChat);
+      return this.chatRepository.findOne(chat.id);
     } else {
       throw new BadRequestException(
-        `manager can't create chat with anonymous options`,
+        `manager can't create chat with anonymous options or can't access with post: ${post.id}`,
       );
     }
   }
@@ -90,7 +117,8 @@ export class ChatService {
       ability.can(Action.Create, createdChat) &&
       ability.can(Action.Read, post)
     ) {
-      return await this.chatRepository.save(createdChat);
+      const chat = await this.chatRepository.save(createdChat);
+      return await this.chatRepository.findOne(chat.id);
     } else {
       throw new BadRequestException(
         `manager can't create chat with anonymous options`,
@@ -101,7 +129,18 @@ export class ChatService {
   async updateChat(updateChatDto: UpdateChatDto) {
     return null;
   }
-  async deleteChat(deleteChatDto: DeleteChatDto) {
-    return null;
+  async deleteChat(deleteChatDto: DeleteChatDto, user: User) {
+    const { spaceId, chatId } = deleteChatDto;
+    const space = await this.spaceService.findSpaceById(spaceId);
+    const chat = await this.findChatById(chatId);
+    const post = chat.post;
+    const ability = await this.caslAbilityFactory.createForUser(user, space);
+    if (ability.can(Action.Read, post) && ability.can(Action.Delete, chat)) {
+      return this.chatRepository.softRemove(chat);
+    } else {
+      throw new ForbiddenException(
+        `can't delete other's chat or can't access the post: ${post.id}`,
+      );
+    }
   }
 }

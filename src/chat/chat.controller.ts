@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -31,35 +32,35 @@ export class ChatController {
   @Get()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ReadChatPolicyHandler())
-  findAllChats(findChatsDto: FindChatsDto, @GetUser() user: User) {
+  findAllChats(@Body() findChatsDto: FindChatsDto, @GetUser() user: User) {
     return this.chatService.findAllChats(findChatsDto, user);
   }
 
   @Post('/reply')
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new CreateChatPolicyHandler())
-  createReply(createReplyDto: CreateReplyDto, @GetUser() user: User) {
+  createReply(@Body() createReplyDto: CreateReplyDto, @GetUser() user: User) {
     return this.chatService.createReply(createReplyDto, user);
   }
 
   @Post()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new CreateChatPolicyHandler())
-  createChat(createChatDto: CreateChatDto, @GetUser() user: User) {
+  createChat(@Body() createChatDto: CreateChatDto, @GetUser() user: User) {
     return this.chatService.createChat(createChatDto, user);
   }
 
   @Patch('/:id')
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new UpdateChatPolicyHandler())
-  updateChat(updateChatDto: UpdateChatDto) {
+  updateChat(@Body() updateChatDto: UpdateChatDto) {
     return this.chatService.updateChat(updateChatDto);
   }
 
-  @Delete('/:id')
+  @Delete()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new DeleteChatPolicyHandler())
-  deleteChat(deleteChatDto: DeleteChatDto) {
-    return this.chatService.deleteChat(deleteChatDto);
+  deleteChat(@Body() deleteChatDto: DeleteChatDto, @GetUser() user: User) {
+    return this.chatService.deleteChat(deleteChatDto, user);
   }
 }

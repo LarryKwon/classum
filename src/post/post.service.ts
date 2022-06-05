@@ -112,7 +112,9 @@ export class PostService {
   async deletePost(deletePostDto: DeletePostDto, currentUser?: User) {
     let post;
     try {
-      post = await this.postRepository.findOneOrFail(deletePostDto.postId);
+      post = await this.postRepository.findOneOrFail(deletePostDto.postId, {
+        relations: ['chats'],
+      });
     } catch (e) {
       throw new NotFoundException(
         `there's no post with id: ${deletePostDto.postId}`,
@@ -129,7 +131,9 @@ export class PostService {
       if (ability.can(Action.Delete, post)) {
         return this.postRepository.softRemove(post);
       } else {
-        throw new ForbiddenException(`can't delete other's post`);
+        throw new ForbiddenException(
+          `can't delete other's post or can't access post:${post.id}`,
+        );
       }
     } else {
       return this.postRepository.softRemove(post);
