@@ -33,6 +33,12 @@ type FlatPost = Post & {
   'space.id': Post['space']['id'];
 };
 
+type FlatChat = Chat & {
+  'writer.id': Chat['writer']['id'];
+} & {
+  'post.id': Chat['post']['id'];
+};
+
 @Injectable()
 export class CaslAbilityFactory {
   constructor(
@@ -80,14 +86,14 @@ export class CaslAbilityFactory {
 
         can(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post, { isAnonymous: false });
-        can(Action.Read, Post);
+        can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
         can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
         can<FlatPost>(Action.Delete, Post, { 'space.id': spaceId });
 
-        can(Action.Create, Chat);
+        can(Action.Create, Chat, { isAnonymous: false });
         can(Action.Read, Chat);
-        can(Action.Update, Chat, { writer: user });
-        can(Action.Delete, Chat);
+        can<FlatChat>(Action.Update, Chat, { 'writer.id': user.id });
+        can<FlatChat>(Action.Delete, Chat);
       } else if (spaceRole.role === Role.USER) {
         cannot(Action.Update, Space);
         cannot(Action.Delete, Space);
@@ -99,14 +105,17 @@ export class CaslAbilityFactory {
 
         cannot(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post);
-        can(Action.Read, Post);
+        can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
         can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
-        can<FlatPost>(Action.Delete, Post, { 'writer.id': user.id });
+        can<FlatPost>(Action.Delete, Post, {
+          'space.id': spaceId,
+          'writer.id': user.id,
+        });
 
         can(Action.Create, Chat);
         can(Action.Read, Chat);
-        can(Action.Update, Chat, { writer: user });
-        can(Action.Delete, Chat, { writer: user });
+        can<FlatChat>(Action.Update, Chat, { 'writer.id': user.id });
+        can<FlatChat>(Action.Delete, Chat, { 'writer.id': user.id });
       }
     } else {
       cannot(Action.Manage, 'all');
