@@ -50,9 +50,13 @@ export class SpaceRoleService {
     const spaceId: number = deleteSpaceRoleDto.spaceId;
     const spaceRoles = await this.findSpaceRole(spaceId);
     Logger.log(JSON.stringify(spaceRoles));
-    if (spaceRoles.length <= 1) {
+    //역할이 한 개 이상 있어야하는지
+    const typeOfRoles = new Set();
+    spaceRoles.forEach((spaceRole) => typeOfRoles.add(spaceRole.role));
+    if (typeOfRoles.size <= 2) {
       throw new BadRequestException(`there must be one role at least`);
     }
+    //삭제하려는 역할이 존재하는지
     const spaceRole = spaceRoles.find((spaceRole) => {
       console.log(deleteSpaceRoleDto.spaceRole.role);
       console.log(deleteSpaceRoleDto.spaceRole.name);
@@ -61,6 +65,7 @@ export class SpaceRoleService {
         spaceRole.name === deleteSpaceRoleDto.spaceRole.name
       );
     });
+    //있다면
     if (spaceRole) {
       const userSpace = await spaceRole.userSpaces;
       Logger.log(JSON.stringify(userSpace));
@@ -71,7 +76,8 @@ export class SpaceRoleService {
       } else {
         return await this.spaceRoleRepository.softDelete(spaceRole.id);
       }
-    } else {
+    } //없다면
+    else {
       const { role, name } = deleteSpaceRoleDto.spaceRole;
       throw new NotFoundException(
         `there's no spaceRole: role: ${role}, name: ${name}`,

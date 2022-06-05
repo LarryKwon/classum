@@ -39,7 +39,7 @@ export class SpaceService {
 
   async deleteSpaceById(id: number): Promise<Space> {
     const spaceWithId = await this.spaceRepository.findOneOrFail(id, {
-      relations: ['userSpaces'],
+      relations: ['userSpaces', 'posts'],
     });
     return await this.spaceRepository.softRemove(spaceWithId);
   }

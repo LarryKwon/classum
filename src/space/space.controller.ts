@@ -69,10 +69,10 @@ export class SpaceController {
     return this.spaceService.findSpaceById(id);
   }
 
-  @Delete('/:id')
+  @Delete()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new DeleteSpacePolicyHandler())
-  deleteSpace(@Param('id') id: number) {
-    return this.spaceService.deleteSpaceById(id);
+  deleteSpace(@Body('spaceId') spaceId: number) {
+    return this.spaceService.deleteSpaceById(spaceId);
   }
 }
