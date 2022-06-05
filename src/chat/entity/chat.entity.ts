@@ -6,12 +6,16 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 import { Space } from '../../space/entity/space.entity';
 import { Post } from '../../post/entity/post.entity';
 import { User } from '../../user/entity/user.entity';
 
 @Entity()
+@Tree('materialized-path')
 export class Chat extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,4 +41,10 @@ export class Chat extends BaseEntity {
     onDelete: 'CASCADE',
   })
   post: Post;
+
+  @TreeChildren()
+  children: Chat[];
+
+  @TreeParent()
+  parent: Chat;
 }
