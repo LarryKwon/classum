@@ -9,6 +9,7 @@ import { PostRepository } from './repository/post.repository';
 import { SpaceModule } from '../space/space.module';
 import { UserSpaceService } from '../userspace/userspace.service';
 import { UserspaceModule } from '../userspace/userspace.module';
+import { PostExistsRule } from './decorator/post-exists.validator';
 
 @Module({
   imports: [
@@ -20,9 +21,10 @@ import { UserspaceModule } from '../userspace/userspace.module';
     CaslModule,
     SpaceModule,
     UserspaceModule,
+    PostModule,
   ],
   controllers: [PostController],
-  providers: [PostService],
-  exports: [PostService],
+  providers: [PostService, PostExistsRule],
+  exports: [PostService, PostExistsRule],
 })
 export class PostModule {}
