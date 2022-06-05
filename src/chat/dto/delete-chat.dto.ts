@@ -1,14 +1,14 @@
 import SpaceExists from '../../space-role/decorator/space-exists.validator';
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import PostExists from '../decorator/post-exists.validator';
+import ChatExists from '../decorator/chat-exists.validator';
 
-export class DeletePostDto {
+export class DeleteChatDto {
   @SpaceExists()
   @IsNumber()
   spaceId: number;
 
-  @PostExists()
+  @ChatExists()
   @IsNumber()
   @IsNotEmpty()
-  postId: number;
+  chatId: number;
 }

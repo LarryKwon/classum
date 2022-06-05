@@ -1,21 +1,23 @@
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import SpaceExists from '../../space-role/decorator/space-exists.validator';
-import PostExists from '../decorator/post-exists.validator';
+import { PostType } from '../../post/enum/post-type.enum';
+import PostExists from '../../post/decorator/post-exists.validator';
 
-export class UpdatePostDto {
+export class CreateChatDto {
   @IsString()
   @IsNotEmpty()
   contents: string;
 
-  @IsString()
-  @IsOptional()
-  attachment?: string;
+  @IsBoolean()
+  @IsNotEmpty()
+  isAnonymous: boolean;
 
   @SpaceExists()
   @IsNumber()
