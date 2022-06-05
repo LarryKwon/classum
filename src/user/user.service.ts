@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { User } from './entity/user.entity';
+import { getRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from './repository/user.repository';
-import { CreateUserDto } from '../auth/dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UserService {
@@ -30,8 +31,23 @@ export class UserService {
     return user;
   }
 
-  findOne(id: number): Promise<User> {
-    return this.userRepository.findOne(id);
+  async findBySearchDto(searchUserDto: SearchUserDto): Promise<User[]> {
+    Logger.log(searchUserDto);
+    const { firstName = '', lastName = '' } = searchUserDto;
+
+    const users = await getRepository(User)
+      .createQueryBuilder()
+      .where('firstName like :firstName and lastName like :lastName', {
+        firstName: `%${firstName}%`,
+        lastName: `%${lastName}%`,
+      })
+      .getMany();
+    Logger.log(JSON.stringify(users));
+    return users;
+  }
+
+  async findById(id: number): Promise<User> {
+    return await this.userRepository.findOne(id);
   }
 
   async setRefreshToken(refreshToken: string, id: number) {
