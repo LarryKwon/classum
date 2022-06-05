@@ -1,6 +1,7 @@
 import {
   BaseEntity,
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -41,6 +42,9 @@ export class Post extends BaseEntity {
 
   @Column()
   isAnonymous: boolean;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   @ManyToOne((type) => Space, (space) => space.posts, {
     eager: true,

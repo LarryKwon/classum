@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -19,6 +20,7 @@ import { Role } from '../auth/enum/role.enum';
 import { PostConverter } from './converter/post-converter';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { Action } from '../auth/enum/Action';
+import { DeletePostDto } from './dto/delete-post.dto';
 
 @Injectable()
 export class PostService {
@@ -107,7 +109,30 @@ export class PostService {
     return null;
   }
 
-  async deletePost(id: number) {
-    return null;
+  async deletePost(deletePostDto: DeletePostDto, currentUser?: User) {
+    let post;
+    try {
+      post = await this.postRepository.findOneOrFail(deletePostDto.postId);
+    } catch (e) {
+      throw new NotFoundException(
+        `there's no post with id: ${deletePostDto.postId}`,
+      );
+    }
+    if (currentUser) {
+      const space = await this.spaceService.findSpaceById(
+        deletePostDto.spaceId,
+      );
+      const ability = await this.caslAbilityFactory.createForUser(
+        currentUser,
+        space,
+      );
+      if (ability.can(Action.Delete, post)) {
+        return this.postRepository.softRemove(post);
+      } else {
+        throw new ForbiddenException(`can't delete other's post`);
+      }
+    } else {
+      return this.postRepository.softRemove(post);
+    }
   }
 }

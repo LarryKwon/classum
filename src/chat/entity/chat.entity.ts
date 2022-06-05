@@ -1,6 +1,7 @@
 import {
   BaseEntity,
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -27,6 +28,9 @@ export class Chat extends BaseEntity {
 
   @Column()
   isAnonymous: boolean;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   @ManyToOne((type) => Post, (post) => post.chats, {
     eager: false,

@@ -99,7 +99,7 @@ export class PostController {
   @Delete()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new DeletePostPolicyHandler())
-  deleteSpaceRole(@Body() deletePostDto: DeletePostDto) {
-    return null;
+  deleteSpaceRole(@Body() deletePostDto: DeletePostDto, @GetUser() user: User) {
+    return this.postService.deletePost(deletePostDto, user);
   }
 }

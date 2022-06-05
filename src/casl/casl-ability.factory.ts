@@ -27,6 +27,12 @@ type Subjects =
 
 export type AppAbility = Ability<[Action, Subjects]>;
 
+type FlatPost = Post & {
+  'writer.id': Post['writer']['id'];
+} & {
+  'space.id': Post['space']['id'];
+};
+
 @Injectable()
 export class CaslAbilityFactory {
   constructor(
@@ -75,8 +81,8 @@ export class CaslAbilityFactory {
         can(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post, { isAnonymous: false });
         can(Action.Read, Post);
-        can(Action.Update, Post, { writer: user });
-        can(Action.Delete, Post);
+        can<FlatPost>(Action.Update, Post, { writer: user });
+        can<FlatPost>(Action.Delete, Post, { 'space.id': spaceId });
 
         can(Action.Create, Chat);
         can(Action.Read, Chat);
@@ -95,7 +101,8 @@ export class CaslAbilityFactory {
         can(Action.WriteQuest, Post);
         can(Action.Read, Post);
         can(Action.Update, Post, { writer: user });
-        can(Action.Delete, Post, { writer: user });
+        can<FlatPost>(Action.Delete, Post, { 'writer.id': user.id });
+        // can(Action.Delete, Post, { writer: user });
 
         can(Action.Create, Chat);
         can(Action.Read, Chat);
