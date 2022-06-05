@@ -14,13 +14,15 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuards } from './guards/local-auth.guards';
-import { User } from '../user/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '../user/entity/user.entity';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from './decorator/skip-auth.decorator';
 import { Response } from 'express';
 import { UserService } from '../user/user.service';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { AuthConverter } from './converter/auth-converter';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,9 +34,12 @@ export class AuthController {
   @Public()
   @Post('/signup')
   @UsePipes(ValidationPipe)
-  signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async signUp(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ProfileResponseDto> {
     Logger.log(createUserDto);
-    return this.authService.signup(createUserDto);
+    const user = await this.authService.signup(createUserDto);
+    return AuthConverter.toResponseDto(user);
   }
 
   @Public()
@@ -53,14 +58,9 @@ export class AuthController {
       this.authService.getCookiesWithRefreshToken(req.user);
 
     await this.userService.setRefreshToken(refreshToken, user.id);
-    Logger.log(JSON.stringify(accessToken));
-    Logger.log(JSON.stringify(accessOption));
-
-    Logger.log(JSON.stringify(refreshToken));
-    Logger.log(JSON.stringify(refreshOption));
     res.cookie('Refresh', refreshToken, refreshOption);
     res.cookie('Authentication', accessToken, accessOption);
-    return user;
+    return AuthConverter.toResponseDto(user);
   }
 
   @Post('logout')
@@ -82,9 +82,8 @@ export class AuthController {
     return user;
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Get('/profile')
   getProfile(@Req() req) {
-    return req.user;
+    return AuthConverter.toResponseDto(req.user);
   }
 }

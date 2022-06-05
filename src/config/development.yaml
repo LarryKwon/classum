@@ -12,9 +12,9 @@ db:
 
 jwt:
   secret: 'Secret1234'
-  expiresIn: 30
+  expiresIn: 3600
   refreshSecret: 'Refresh1234'
-  refreshExpire: 60
+  refreshExpire: 2592000
 
 logger:
   level: ['debug']
