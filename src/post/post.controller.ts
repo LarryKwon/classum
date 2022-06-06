@@ -89,11 +89,11 @@ export class PostController {
     return this.postService.createPost(createPostDto, user);
   }
 
-  @Patch('/:id')
+  @Patch()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new UpdatePostPolicyHandler())
-  updateBoard(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto) {
-    return null;
+  updateBoard(@Body() updatePostDto: UpdatePostDto, @GetUser() user: User) {
+    return this.postService.updatePost(updatePostDto, user);
   }
 
   @Delete()

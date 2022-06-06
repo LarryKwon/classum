@@ -87,7 +87,10 @@ export class CaslAbilityFactory {
         can(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post, { isAnonymous: false });
         can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
-        can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
+        can<FlatPost>(Action.Update, Post, {
+          'writer.id': user.id,
+          'space.id': spaceId,
+        });
         can<FlatPost>(Action.Delete, Post, { 'space.id': spaceId });
 
         can(Action.Create, Chat, { isAnonymous: false });
@@ -106,7 +109,10 @@ export class CaslAbilityFactory {
         cannot(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post);
         can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
-        can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
+        can<FlatPost>(Action.Update, Post, {
+          'space.id': spaceId,
+          'writer.id': user.id,
+        });
         can<FlatPost>(Action.Delete, Post, {
           'space.id': spaceId,
           'writer.id': user.id,

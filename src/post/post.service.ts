@@ -105,8 +105,25 @@ export class PostService {
     }
   }
 
-  async updatePost(updatePostDto: UpdatePostDto) {
-    return null;
+  async updatePost(updatePostDto: UpdatePostDto, user: User) {
+    const { spaceId, postId, contents, attachment = null } = updatePostDto;
+    const space = await this.spaceService.findSpaceById(spaceId);
+    let post;
+    try {
+      post = await this.postRepository.findOneOrFail(postId);
+    } catch (e) {
+      throw new NotFoundException(`there's no post with id: ${postId}`);
+    }
+    const ability = await this.caslAbilityFactory.createForUser(user, space);
+    if (ability.can(Action.Update, post)) {
+      post.contents = contents;
+      post.attachment = attachment;
+      return await this.postRepository.save(post);
+    } else {
+      throw new ForbiddenException(
+        `can't access the post: ${postId} on update Execution`,
+      );
+    }
   }
 
   async deletePost(deletePostDto: DeletePostDto, currentUser?: User) {
