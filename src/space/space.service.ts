@@ -118,48 +118,60 @@ export class SpaceService {
     }
     Logger.log('searched Space: ', JSON.stringify(space));
     //user가 이미 space에 들어와있는지 검사
-    const userSpaces = await space.userSpaces;
-    Logger.log(JSON.stringify(userSpaces));
-    const usersInSpacePromise = userSpaces.map(
-      async (userSpace) => await userSpace.user,
-    );
-    const usersInSpace = await Promise.all(usersInSpacePromise);
-    const userInSpace = usersInSpace.find(
-      (userInSpace) => userInSpace.email === user.email,
-    );
+    const userInSpace = await this.userSpaceRepository.findOne({
+      where: {
+        user: user,
+        space: space,
+      },
+      relations: ['user'],
+      withDeleted: true,
+    });
+    // Logger.log(JSON.stringify(userSpaces));
+    // const usersInSpacePromise = userSpaces.map(
+    //   async (userSpace) => await userSpace.user,
+    // );
+    // const usersInSpace = await Promise.all(usersInSpacePromise);
+    // const userInSpace = usersInSpace.find(
+    //   (userInSpace) => userInSpace.email === user.email,
+    // );
     if (userInSpace) {
-      throw new BadRequestException(
-        `user ${user.firstName} ${user.lastName} already exists`,
-      );
-    }
-
-    //선택한 spaceRole이 존재하는지 검사
-    const userSpaceRole = space.spaceRoles.find(
-      (spaceRole) =>
-        spaceRole.name === selectedSpaceRole.name &&
-        spaceRole.role === selectedSpaceRole.role,
-    );
-    if (!userSpaceRole) {
-      throw new NotFoundException(
-        `No Role:${selectedSpaceRole.name} in this Space `,
-      );
-    }
-
-    //입력한 코드와 선택한 spaceRole의 role이 같은지 검사
-    if (
-      (space.userCode === code && userSpaceRole.role === Role.USER) ||
-      (space.managerCode === code && userSpaceRole.role === Role.MANAGER)
-    ) {
-      const userSpace = await this.userSpaceService.createRelations(
-        user,
-        space,
-        userSpaceRole,
-      );
-      return await userSpace.space;
+      if (userInSpace.deletedAt) {
+        await this.userSpaceRepository.recover(userInSpace);
+        return await userInSpace.space;
+      } else {
+        throw new BadRequestException(
+          `user ${user.firstName} ${user.lastName} already exists`,
+        );
+      }
     } else {
-      throw new NotFoundException(
-        `can't join space with selected spaceRole: spaceRole of with ${code} is ${userSpaceRole.role}`,
+      //선택한 spaceRole이 존재하는지 검사
+      const userSpaceRole = space.spaceRoles.find(
+        (spaceRole) =>
+          spaceRole.name === selectedSpaceRole.name &&
+          spaceRole.role === selectedSpaceRole.role,
       );
+      if (!userSpaceRole) {
+        throw new NotFoundException(
+          `No Role:${selectedSpaceRole.name} in this Space `,
+        );
+      }
+
+      //입력한 코드와 선택한 spaceRole의 role이 같은지 검사
+      if (
+        (space.userCode === code && userSpaceRole.role === Role.USER) ||
+        (space.managerCode === code && userSpaceRole.role === Role.MANAGER)
+      ) {
+        const userSpace = await this.userSpaceService.createRelations(
+          user,
+          space,
+          userSpaceRole,
+        );
+        return await userSpace.space;
+      } else {
+        throw new NotFoundException(
+          `can't join space with selected spaceRole: spaceRole of with ${code} is ${userSpaceRole.role}`,
+        );
+      }
     }
   }
 
