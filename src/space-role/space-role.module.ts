@@ -8,6 +8,7 @@ import { UserspaceModule } from '../userspace/userspace.module';
 import { CaslModule } from '../casl/casl.module';
 import { SpaceRepository } from '../space/repository/space.repository';
 import { SpaceExistsRule } from './decorator/space-exists.validator';
+import { SpaceModule } from '../space/space.module';
 
 @Module({
   imports: [

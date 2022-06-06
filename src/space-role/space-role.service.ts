@@ -11,6 +11,7 @@ import { CreateSpaceRoleDto } from './dto/create-spaceRole.dto';
 import { SpaceRole } from './entity/space-role.entity';
 import { DeleteSpaceRoleDto } from './dto/delete-spaceRole.dto';
 import { FindOneOptions } from 'typeorm';
+import { SpaceService } from '../space/space.service';
 
 @Injectable()
 export class SpaceRoleService {
@@ -21,7 +22,32 @@ export class SpaceRoleService {
     private readonly spaceRoleRepository: SpaceRoleRepository,
   ) {}
 
-  async createSpaceRole(spaceRoles: CreateSpaceRoleDto[]) {
+  async createSpaceRole(spaceRole: CreateSpaceRoleDto, spaceId: number) {
+    const { name, role } = spaceRole;
+    let space;
+    try {
+      space = await this.spaceRepository.findOneOrFail(spaceId);
+    } catch (e) {
+      throw new NotFoundException(`there's no space with spaceId: ${spaceId}`);
+    }
+    const spaceRoles = space.spaceRoles;
+    const searchedSpaceRole = spaceRoles.find(
+      (spaceRole) => spaceRole.role === role && spaceRole.name === name,
+    );
+    if (searchedSpaceRole) {
+      throw new BadRequestException(
+        `spaceRole, ${role}: ${name} already exists in space" ${spaceId}`,
+      );
+    }
+    const createdSpaceRole = await this.spaceRoleRepository.create({
+      name: name,
+      role: role,
+      space: space,
+    });
+    return await this.spaceRoleRepository.save(createdSpaceRole);
+  }
+
+  async createSpaceRoles(spaceRoles: CreateSpaceRoleDto[]) {
     const createdSpaceRoles: Array<SpaceRole> = spaceRoles.map((spaceRole) =>
       this.spaceRoleRepository.create({
         name: spaceRole.name,

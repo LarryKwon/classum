@@ -81,7 +81,7 @@ export class SpaceService {
     const userCode: string = generateRandomString(8);
     const managerCode: string = generateRandomString(8);
 
-    const savedSpaceRoles = await this.spaceRoleService.createSpaceRole(
+    const savedSpaceRoles = await this.spaceRoleService.createSpaceRoles(
       spaceRoles,
     );
     const userSpaceRole = savedSpaceRoles.find(
