@@ -66,13 +66,13 @@ export class CaslAbilityFactory {
       },
     });
 
-    Logger.log('USER', JSON.stringify(user));
-    Logger.log('SPACE', JSON.stringify(space));
-    Logger.log('USERSPACE', JSON.stringify(userSpace));
+    // Logger.log('USER', JSON.stringify(user));
+    // Logger.log('SPACE', JSON.stringify(space));
+    // Logger.log('USERSPACE', JSON.stringify(userSpace));
 
     if (userSpace) {
       const spaceRole = await userSpace.spaceRole;
-      Logger.log('SPACEROLE', JSON.stringify(spaceRole));
+      // Logger.log('SPACEROLE', JSON.stringify(spaceRole));
       if (spaceRole.role === Role.ADMIN) {
         can(Action.Manage, 'all');
       } else if (spaceRole.role === Role.MANAGER) {

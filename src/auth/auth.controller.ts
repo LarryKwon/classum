@@ -37,7 +37,7 @@ export class AuthController {
   async signUp(
     @Body() createUserDto: CreateUserDto,
   ): Promise<ProfileResponseDto> {
-    Logger.log(createUserDto);
+    // Logger.log(createUserDto);
     const user = await this.authService.signup(createUserDto);
     return AuthConverter.toResponseDto(user);
   }
@@ -51,7 +51,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = req.user;
-    Logger.log(authCredentialDto);
+    // Logger.log(authCredentialDto);
     const { accessToken, ...accessOption } =
       this.authService.getCookieWithJwtAccessToken(req.user);
     const { refreshToken, ...refreshOption } =

@@ -77,7 +77,7 @@ export class PostService {
         spaceId: spaceId,
       })
       .getMany();
-    Logger.log('searched Post:', JSON.stringify(posts));
+    // Logger.log('searched Post:', JSON.stringify(posts));
     if (posts.length == 0) {
       throw new NotFoundException(`there's no post with keyword: ${keyword}`);
     }

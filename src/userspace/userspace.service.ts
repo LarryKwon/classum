@@ -37,7 +37,7 @@ export class UserSpaceService {
     createdRelations.user = Promise.resolve(user);
     createdRelations.space = Promise.resolve(space);
     createdRelations.spaceRole = Promise.resolve(spaceRole);
-    Logger.log(JSON.stringify(createdRelations));
+    // Logger.log(JSON.stringify(createdRelations));
     return await entityManager.getRepository(UserSpace).save(createdRelations);
   }
 

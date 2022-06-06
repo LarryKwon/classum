@@ -45,7 +45,7 @@ export class UserController {
     @Param('id') id: number,
     @Req() request: Request,
   ): Promise<User> {
-    console.log(request.cookies['Authentication']);
+    // console.log(request.cookies['Authentication']);
     return this.userService.findById(id);
   }
 }

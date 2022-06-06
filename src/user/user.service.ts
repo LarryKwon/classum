@@ -35,7 +35,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User> {
-    console.log(email);
+    // console.log(email);
     const user = await this.userRepository.findOne({ where: { email: email } });
     if (!user) {
       throw new NotFoundException(`Can't find user with email: ${email}`);
@@ -44,7 +44,7 @@ export class UserService {
   }
 
   async findBySearchDto(searchUserDto: SearchUserDto): Promise<User[]> {
-    Logger.log(searchUserDto);
+    // Logger.log(searchUserDto);
     const { firstName = '', lastName = '' } = searchUserDto;
 
     const users = await getRepository(User)
@@ -54,7 +54,7 @@ export class UserService {
         lastName: `%${lastName}%`,
       })
       .getMany();
-    Logger.log(JSON.stringify(users));
+    // Logger.log(JSON.stringify(users));
     return users;
   }
 

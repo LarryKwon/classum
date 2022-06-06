@@ -100,7 +100,7 @@ export class SpaceRoleService {
   async deleteSpaceRole(deleteSpaceRoleDto: DeleteSpaceRoleDto) {
     const spaceId: number = deleteSpaceRoleDto.spaceId;
     const spaceRoles = await this.findSpaceRole(spaceId);
-    Logger.log(JSON.stringify(spaceRoles));
+    // Logger.log(JSON.stringify(spaceRoles));
     //역할이 한 개 이상 있어야하는지
     const typeOfRoles = new Set();
     spaceRoles.forEach((spaceRole) => typeOfRoles.add(spaceRole.role));
@@ -109,8 +109,8 @@ export class SpaceRoleService {
     }
     //삭제하려는 역할이 존재하는지
     const spaceRole = spaceRoles.find((spaceRole) => {
-      console.log(deleteSpaceRoleDto.spaceRole.role);
-      console.log(deleteSpaceRoleDto.spaceRole.name);
+      // console.log(deleteSpaceRoleDto.spaceRole.role);
+      // console.log(deleteSpaceRoleDto.spaceRole.name);
       return (
         spaceRole.role === deleteSpaceRoleDto.spaceRole.role &&
         spaceRole.name === deleteSpaceRoleDto.spaceRole.name
@@ -119,7 +119,7 @@ export class SpaceRoleService {
     //있다면
     if (spaceRole) {
       const userSpace = await spaceRole.userSpaces;
-      Logger.log(JSON.stringify(userSpace));
+      // Logger.log(JSON.stringify(userSpace));
       if (userSpace.length) {
         throw new BadRequestException(
           `there are users with role: ${spaceRole.role} ${spaceRole.name}`,

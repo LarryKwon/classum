@@ -31,14 +31,14 @@ export class UserRepository extends Repository<User> {
       firstName: firstName,
       lastName: lastName,
     });
-    Logger.log(JSON.stringify(user));
+    // Logger.log(JSON.stringify(user));
     try {
       return await manager.save(user);
     } catch (e) {
       if (e.code === 'ER_DUP_ENTRY') {
         throw new ConflictException('already exist user');
       } else {
-        console.log(e);
+        // console.log(e);
         throw new InternalServerErrorException();
       }
     }

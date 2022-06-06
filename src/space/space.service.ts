@@ -62,7 +62,7 @@ export class SpaceService {
       if (!searchedSpace) {
         throw new NotFoundException(`Can't find space that contains ${code}`);
       }
-      Logger.log('searched Space: ', searchedSpace);
+      // Logger.log('searched Space: ', searchedSpace);
       return searchedSpace;
     } else if (typeof searchSpaceDto == 'string') {
       const searchedSpace: Space = await getRepository(Space)
@@ -134,7 +134,7 @@ export class SpaceService {
         if (!space) {
           throw new NotFoundException(`no space with ${spaceId}`);
         }
-        Logger.log('searched Space: ', JSON.stringify(space));
+        // Logger.log('searched Space: ', JSON.stringify(space));
         //user가 이미 space에 들어와있는지 검사
         const userInSpace = await entityManager
           .getRepository(UserSpace)

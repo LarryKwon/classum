@@ -37,7 +37,7 @@ export class SpaceExistsRule implements ValidatorConstraintInterface {
     if (typeof value === 'number') {
       try {
         const space = await this.spaceRepository.findOneOrFail(value);
-        Logger.log(JSON.stringify(space));
+        // Logger.log(JSON.stringify(space));
         return true;
       } catch (e) {
         return false;

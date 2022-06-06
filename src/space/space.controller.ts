@@ -44,7 +44,7 @@ export class SpaceController {
     @Body() createSpaceDto: CreateSpaceDto,
     @GetUser() user: User,
   ) {
-    Logger.log(JSON.stringify(createSpaceDto));
+    // Logger.log(JSON.stringify(createSpaceDto));
     if (!createSpaceDto.isSelectInSpaceRoles()) {
       throw new BadRequestException('select role must be in role list');
     }
