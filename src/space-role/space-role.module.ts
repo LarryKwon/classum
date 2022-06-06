@@ -21,6 +21,6 @@ import { SpaceExistsRule } from './decorator/space-exists.validator';
   ],
   providers: [SpaceRoleService, SpaceExistsRule],
   controllers: [SpaceRoleController],
-  exports: [SpaceRoleService],
+  exports: [SpaceRoleService, SpaceExistsRule],
 })
 export class SpaceRoleModule {}

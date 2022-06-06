@@ -19,6 +19,7 @@ import { User } from '../user/entity/user.entity';
 import { SpaceRole } from '../space-role/entity/space-role.entity';
 import { UserSpace } from '../userspace/entity/userspace.entity';
 import { find } from 'rxjs';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 
 @Injectable()
 export class SpaceService {
@@ -35,13 +36,6 @@ export class SpaceService {
     } catch (e) {
       throw new NotFoundException(`no space with id ${id}`);
     }
-  }
-
-  async deleteSpaceById(id: number): Promise<Space> {
-    const spaceWithId = await this.spaceRepository.findOneOrFail(id, {
-      relations: ['userSpaces', 'posts'],
-    });
-    return await this.spaceRepository.softRemove(spaceWithId);
   }
 
   async searchSpace(searchSpaceDto: SearchSpaceDto): Promise<Array<Space>>;
@@ -162,5 +156,19 @@ export class SpaceService {
         `can't join space with selected spaceRole: spaceRole of with ${code} is ${userSpaceRole.role}`,
       );
     }
+  }
+
+  async updateSpaceById(updateSpaceDto: UpdateSpaceDto) {
+    const { spaceId, updatedName } = updateSpaceDto;
+    const space = await this.findSpaceById(spaceId);
+    space.name = updatedName;
+    return await this.spaceRepository.save(space);
+  }
+
+  async deleteSpaceById(id: number): Promise<Space> {
+    const spaceWithId = await this.spaceRepository.findOneOrFail(id, {
+      relations: ['userSpaces', 'posts'],
+    });
+    return await this.spaceRepository.softRemove(spaceWithId);
   }
 }
