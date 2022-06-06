@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { getRepository, Repository } from 'typeorm';
+import { getManager, getRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from './repository/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,11 +15,23 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userRepository.createUser(createUserDto);
+    return await getManager()
+      .transaction(async (manager) => {
+        return await this.userRepository.createUser(createUserDto, manager);
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
 
-  findAll(): Promise<Array<User>> {
-    return this.userRepository.find();
+  async findAll(): Promise<Array<User>> {
+    return await getManager()
+      .transaction(async (manager) => {
+        return await this.userRepository.find();
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
 
   async findByEmail(email: string): Promise<User> {

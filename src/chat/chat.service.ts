@@ -140,7 +140,6 @@ export class ChatService {
     } else {
       throw new ForbiddenException(`can't access to chat with id: ${chatId}`);
     }
-    return null;
   }
   async deleteChat(deleteChatDto: DeleteChatDto, user: User) {
     const { spaceId, chatId } = deleteChatDto;

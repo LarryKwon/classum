@@ -48,15 +48,7 @@ export class SpaceController {
     if (!createSpaceDto.isSelectInSpaceRoles()) {
       throw new BadRequestException('select role must be in role list');
     }
-    const { savedSpace, userSpaceRole } = await this.spaceService.createSpace(
-      createSpaceDto,
-    );
-    await this.userSpaceService.createRelations(
-      user,
-      savedSpace,
-      userSpaceRole,
-    );
-    return savedSpace;
+    return await this.spaceService.createSpace(createSpaceDto, user);
   }
 
   @Get('/search')
