@@ -126,7 +126,20 @@ export class ChatService {
     }
   }
 
-  async updateChat(updateChatDto: UpdateChatDto) {
+  async updateChat(updateChatDto: UpdateChatDto, user: User) {
+    const { contents, spaceId, chatId } = updateChatDto;
+    const space = await this.spaceService.findSpaceById(spaceId);
+    const chat = await this.findChatById(chatId);
+    const ability = await this.caslAbilityFactory.createForUser(user, space);
+    if (
+      ability.can(Action.Read, chat.post) &&
+      ability.can(Action.Update, chat)
+    ) {
+      chat.contents = contents;
+      return await this.chatRepository.save(chat);
+    } else {
+      throw new ForbiddenException(`can't access to chat with id: ${chatId}`);
+    }
     return null;
   }
   async deleteChat(deleteChatDto: DeleteChatDto, user: User) {
