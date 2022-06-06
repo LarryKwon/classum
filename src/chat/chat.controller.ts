@@ -50,11 +50,11 @@ export class ChatController {
     return this.chatService.createChat(createChatDto, user);
   }
 
-  @Patch('/:id')
+  @Patch()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new UpdateChatPolicyHandler())
-  updateChat(@Body() updateChatDto: UpdateChatDto) {
-    return this.chatService.updateChat(updateChatDto);
+  updateChat(@Body() updateChatDto: UpdateChatDto, @GetUser() user: User) {
+    return this.chatService.updateChat(updateChatDto, user);
   }
 
   @Delete()

@@ -38,7 +38,7 @@ export class PostExistsRule implements ValidatorConstraintInterface {
     if (typeof value === 'number') {
       try {
         const post = await this.postRepository.findOneOrFail(value);
-        Logger.log(JSON.stringify(post));
+        // Logger.log(JSON.stringify(post));
         return true;
       } catch (e) {
         return false;

@@ -66,18 +66,19 @@ export class CaslAbilityFactory {
       },
     });
 
-    Logger.log('USER', JSON.stringify(user));
-    Logger.log('SPACE', JSON.stringify(space));
-    Logger.log('USERSPACE', JSON.stringify(userSpace));
+    // Logger.log('USER', JSON.stringify(user));
+    // Logger.log('SPACE', JSON.stringify(space));
+    // Logger.log('USERSPACE', JSON.stringify(userSpace));
 
     if (userSpace) {
       const spaceRole = await userSpace.spaceRole;
-      Logger.log('SPACEROLE', JSON.stringify(spaceRole));
+      // Logger.log('SPACEROLE', JSON.stringify(spaceRole));
       if (spaceRole.role === Role.ADMIN) {
         can(Action.Manage, 'all');
       } else if (spaceRole.role === Role.MANAGER) {
         can(Action.Update, Space);
         can(Action.Delete, Space);
+        can(Action.Exit, Space);
 
         can(Action.Create, SpaceRole);
         can(Action.Read, SpaceRole);
@@ -87,7 +88,10 @@ export class CaslAbilityFactory {
         can(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post, { isAnonymous: false });
         can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
-        can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
+        can<FlatPost>(Action.Update, Post, {
+          'writer.id': user.id,
+          'space.id': spaceId,
+        });
         can<FlatPost>(Action.Delete, Post, { 'space.id': spaceId });
 
         can(Action.Create, Chat, { isAnonymous: false });
@@ -97,6 +101,7 @@ export class CaslAbilityFactory {
       } else if (spaceRole.role === Role.USER) {
         cannot(Action.Update, Space);
         cannot(Action.Delete, Space);
+        can(Action.Exit, Space);
 
         cannot(Action.Create, SpaceRole);
         can(Action.Read, SpaceRole);
@@ -106,7 +111,10 @@ export class CaslAbilityFactory {
         cannot(Action.WriteNotice, Post);
         can(Action.WriteQuest, Post);
         can<FlatPost>(Action.Read, Post, { 'space.id': spaceId });
-        can<FlatPost>(Action.Update, Post, { 'writer.id': user.id });
+        can<FlatPost>(Action.Update, Post, {
+          'space.id': spaceId,
+          'writer.id': user.id,
+        });
         can<FlatPost>(Action.Delete, Post, {
           'space.id': spaceId,
           'writer.id': user.id,

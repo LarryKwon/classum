@@ -37,10 +37,10 @@ export class PoliciesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     const spaceId = request.body.spaceId;
-    Logger.log('spaceId params: ', spaceId);
+    // Logger.log('spaceId params: ', spaceId);
     try {
       const space = await this.spaceRepository.findOneOrFail(spaceId);
-      Logger.log(`search with ${spaceId}`, JSON.stringify(space));
+      // Logger.log(`search with ${spaceId}`, JSON.stringify(space));
       const ability = await this.caslAbilityFactory.createForUser(user, space);
       return policyHandlers.every((handler) =>
         this.execPolicyHandler(handler, ability),

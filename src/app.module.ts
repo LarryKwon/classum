@@ -1,4 +1,9 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -18,6 +23,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserspaceModule } from './userspace/userspace.module';
 import { Role } from './auth/enum/role.enum';
 import { CaslModule } from './casl/casl.module';
+import { AppLoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -49,4 +55,8 @@ import { CaslModule } from './casl/casl.module';
     AppService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}

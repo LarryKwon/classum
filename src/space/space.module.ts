@@ -10,6 +10,7 @@ import { UserspaceModule } from '../userspace/userspace.module';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { CaslModule } from '../casl/casl.module';
 import { UserSpaceRepository } from '../userspace/repository/userspace.repository';
+import { SpaceExistsRule } from '../space-role/decorator/space-exists.validator';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UserSpaceRepository } from '../userspace/repository/userspace.repositor
     CaslModule,
   ],
   controllers: [SpaceController],
-  providers: [SpaceService],
+  providers: [SpaceService, SpaceExistsRule],
   exports: [SpaceService],
 })
 export class SpaceModule {}

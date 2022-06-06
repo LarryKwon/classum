@@ -7,6 +7,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -22,7 +23,12 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UserSpaceService } from '../userspace/userspace.service';
 import { PoliciesGuard } from '../auth/guards/policies.guard';
 import { CheckPolicies } from '../auth/decorator/policy.decorator';
-import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space.delete-policy.handler';
+import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.delete-policy.handler';
+import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.update-policy.handler';
+import { Check } from 'typeorm';
+import { ExitSpaceDto } from './dto/exit-space.dto';
+import { ExitSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.exit-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
@@ -38,19 +44,11 @@ export class SpaceController {
     @Body() createSpaceDto: CreateSpaceDto,
     @GetUser() user: User,
   ) {
-    Logger.log(JSON.stringify(createSpaceDto));
+    // Logger.log(JSON.stringify(createSpaceDto));
     if (!createSpaceDto.isSelectInSpaceRoles()) {
       throw new BadRequestException('select role must be in role list');
     }
-    const { savedSpace, userSpaceRole } = await this.spaceService.createSpace(
-      createSpaceDto,
-    );
-    await this.userSpaceService.createRelations(
-      user,
-      savedSpace,
-      userSpaceRole,
-    );
-    return savedSpace;
+    return await this.spaceService.createSpace(createSpaceDto, user);
   }
 
   @Get('/search')
@@ -64,9 +62,23 @@ export class SpaceController {
     return this.spaceService.joinSpace(joinSpaceDto, user);
   }
 
+  @Post('/exit')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ExitSpacePolicyHandler())
+  exitSpace(@Body() exitSpaceDto: ExitSpaceDto, @GetUser() user: User) {
+    return this.spaceService.exitSpaceById(exitSpaceDto, user);
+  }
+
   @Get('/:spaceId')
   findSpaceById(@Param('spaceId') id: number) {
     return this.spaceService.findSpaceById(id);
+  }
+
+  @Patch()
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new UpdateSpacePolicyHandler())
+  updateSpace(@Body() updateSpaceDto: UpdateSpaceDto, @GetUser() user: User) {
+    return this.spaceService.updateSpaceById(updateSpaceDto);
   }
 
   @Delete()

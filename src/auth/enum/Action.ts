@@ -7,4 +7,6 @@ export enum Action {
 
   WriteNotice = 'writeNotice',
   WriteQuest = 'writeQuest',
+
+  Exit = 'exit',
 }

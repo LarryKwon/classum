@@ -37,7 +37,7 @@ export class ChatExistsRule implements ValidatorConstraintInterface {
     if (typeof value === 'number') {
       try {
         const chat = await this.chatRepository.findOneOrFail(value);
-        Logger.log(JSON.stringify(chat));
+        // Logger.log(JSON.stringify(chat));
         return true;
       } catch (e) {
         return false;

@@ -23,6 +23,6 @@ async function bootstrap() {
 
   const logConfig = configService.get<false | LogLevel[]>('logger.level');
   await app.useLogger(logConfig);
-  Logger.log(`Application listening on port ${port}`);
+  // Logger.log(`Application listening on port ${port}`);
 }
 bootstrap();
