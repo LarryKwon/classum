@@ -7,6 +7,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -23,6 +24,8 @@ import { UserSpaceService } from '../userspace/userspace.service';
 import { PoliciesGuard } from '../auth/guards/policies.guard';
 import { CheckPolicies } from '../auth/decorator/policy.decorator';
 import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space.delete-policy.handler';
+import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateSpacePolicyHandler } from '../auth/guards/policy-handler/space.update-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
@@ -67,6 +70,13 @@ export class SpaceController {
   @Get('/:spaceId')
   findSpaceById(@Param('spaceId') id: number) {
     return this.spaceService.findSpaceById(id);
+  }
+
+  @Patch()
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new UpdateSpacePolicyHandler())
+  updateSpace(@Body() updateSpaceDto: UpdateSpaceDto, @GetUser() user: User) {
+    return this.spaceService.updateSpaceById(updateSpaceDto);
   }
 
   @Delete()
