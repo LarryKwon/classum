@@ -78,6 +78,7 @@ export class CaslAbilityFactory {
       } else if (spaceRole.role === Role.MANAGER) {
         can(Action.Update, Space);
         can(Action.Delete, Space);
+        can(Action.Exit, Space);
 
         can(Action.Create, SpaceRole);
         can(Action.Read, SpaceRole);
@@ -100,6 +101,7 @@ export class CaslAbilityFactory {
       } else if (spaceRole.role === Role.USER) {
         cannot(Action.Update, Space);
         cannot(Action.Delete, Space);
+        can(Action.Exit, Space);
 
         cannot(Action.Create, SpaceRole);
         can(Action.Read, SpaceRole);

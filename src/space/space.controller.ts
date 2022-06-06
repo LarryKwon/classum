@@ -26,6 +26,9 @@ import { CheckPolicies } from '../auth/decorator/policy.decorator';
 import { DeleteSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.delete-policy.handler';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { UpdateSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.update-policy.handler';
+import { Check } from 'typeorm';
+import { ExitSpaceDto } from './dto/exit-space.dto';
+import { ExitSpacePolicyHandler } from '../auth/guards/policy-handler/space/space.exit-policy.handler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('space')
@@ -65,6 +68,13 @@ export class SpaceController {
   @Post('/join')
   joinSpace(@Body() joinSpaceDto: JoinSpaceDto, @GetUser() user: User) {
     return this.spaceService.joinSpace(joinSpaceDto, user);
+  }
+
+  @Post('/exit')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ExitSpacePolicyHandler())
+  exitSpace(@Body() exitSpaceDto: ExitSpaceDto, @GetUser() user: User) {
+    return this.spaceService.exitSpaceById(exitSpaceDto, user);
   }
 
   @Get('/:spaceId')

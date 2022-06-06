@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -11,23 +12,27 @@ import { generateRandomString } from '../util/code-generator';
 import { SpaceRoleService } from '../space-role/space-role.service';
 import { Role } from '../auth/enum/role.enum';
 import { SearchSpaceDto } from './dto/search-space.dto';
-import { getRepository, UpdateResult } from 'typeorm';
+import { getRepository, In } from 'typeorm';
 import { Space } from './entity/space.entity';
 import { JoinSpaceDto } from './dto/join-space.dto';
 import { UserSpaceService } from '../userspace/userspace.service';
 import { User } from '../user/entity/user.entity';
-import { SpaceRole } from '../space-role/entity/space-role.entity';
-import { UserSpace } from '../userspace/entity/userspace.entity';
-import { find } from 'rxjs';
 import { UpdateSpaceDto } from './dto/update-space.dto';
+import { ExitSpaceDto } from './dto/exit-space.dto';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { Action } from '../auth/enum/Action';
+import { UserSpaceRepository } from '../userspace/repository/userspace.repository';
 
 @Injectable()
 export class SpaceService {
   constructor(
     @InjectRepository(SpaceRepository)
     private readonly spaceRepository: SpaceRepository,
+    @InjectRepository(UserSpaceRepository)
+    private readonly userSpaceRepository: UserSpaceRepository,
     private readonly spaceRoleService: SpaceRoleService,
     private readonly userSpaceService: UserSpaceService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   async findSpaceById(id: number) {
@@ -155,6 +160,53 @@ export class SpaceService {
       throw new NotFoundException(
         `can't join space with selected spaceRole: spaceRole of with ${code} is ${userSpaceRole.role}`,
       );
+    }
+  }
+
+  async exitSpaceById(exitSpaceDto: ExitSpaceDto, user: User) {
+    const { spaceId } = exitSpaceDto;
+    const space = await this.findSpaceById(spaceId);
+    const spaceManagerRoles = space.spaceRoles
+      .filter((spaceRole) => spaceRole.role == Role.MANAGER)
+      .map((item) => item.id);
+
+    let userSpaceRole;
+    let userSpace;
+    try {
+      userSpace = await this.userSpaceRepository.findOneOrFail({
+        where: {
+          space: space,
+          user: user,
+        },
+      });
+      userSpaceRole = await userSpace.spaceRole;
+    } catch (e) {
+      throw new NotFoundException(
+        `user doesn't join in space with id:${spaceId}`,
+      );
+    }
+
+    const numOfManagers = await this.userSpaceRepository.count({
+      where: {
+        space: space,
+        spaceRole: In(spaceManagerRoles),
+      },
+    });
+    const ability = await this.caslAbilityFactory.createForUser(user, space);
+    if (ability.can(Action.Exit, space)) {
+      if (userSpaceRole.role === Role.MANAGER) {
+        if (numOfManagers === 1) {
+          throw new ForbiddenException(
+            `can't exit the space because there is only one manager`,
+          );
+        } else {
+          return await this.userSpaceRepository.softDelete(userSpace);
+        }
+      } else if (userSpaceRole.role === Role.USER) {
+        return await this.userSpaceRepository.softDelete(userSpace.id);
+      }
+    } else {
+      throw new ForbiddenException(`can't exit the space`);
     }
   }
 
